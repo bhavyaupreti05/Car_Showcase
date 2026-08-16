@@ -1,0 +1,31 @@
+{
+  "name": "car-showcase-backend",
+  "version": "1.0.0",
+  "description": "AI-powered car discovery platform backend",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node seeds/seedCars.js"
+  },
+  "keywords": [
+    "cars",
+    "ai",
+    "recommendations"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "dotenv": "^16.3.1",
+    "openai": "^4.20.0",
+    "cors": "^2.8.5",
+    "express-validator": "^7.0.0",
+    "helmet": "^7.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
