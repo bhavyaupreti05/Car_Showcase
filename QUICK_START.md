@@ -1,4 +1,4 @@
-# Quick Start Guide - CarHub MERN Stack
+# Quick Start Guide - Car Showcase MERN Stack
 
 ## 1️⃣ Prerequisites
 - Node.js 18+ (Download from nodejs.org)

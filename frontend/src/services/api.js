@@ -13,8 +13,10 @@ const apiClient = axios.create({
 export const carAPI = {
   getAllCars: (filters = {}) => apiClient.get('/cars', { params: filters }),
   getCarById: (id) => apiClient.get(`/cars/${id}`),
-  getRecommendations: (query) =>
-    apiClient.post('/cars/recommendations', { query }),
+  getRecommendations: (query, persona = 'track_enthusiast') =>
+    apiClient.post('/cars/recommendations', { query, persona }),
+  getDnaMatch: (answers, persona = 'track_enthusiast') =>
+    apiClient.post('/cars/dna-match', { answers, persona }),
   compareCars: (car1Id, car2Id) =>
     apiClient.post('/cars/compare', { car1Id, car2Id }),
 };

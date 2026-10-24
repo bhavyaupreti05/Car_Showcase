@@ -1,6 +1,8 @@
 import Car from '../models/Car.js';
-import { getCarRecommendations, getCarComparison } from '../services/openaiService.js';
+import { getCarRecommendations, getCarComparison, getDnaMatch } from '../services/openaiService.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { searchByVector } from '../services/vectorSearchService.js';
+import queryCache from '../utils/cacheManager.js';
 
 export const getAllCars = asyncHandler(async (req, res) => {
   const {
@@ -70,7 +72,7 @@ export const getCarById = asyncHandler(async (req, res) => {
 });
 
 export const getRecommendations = asyncHandler(async (req, res) => {
-  const { query } = req.body;
+  const { query, persona = 'track_enthusiast' } = req.body;
 
   if (!query || query.trim() === '') {
     return res.status(400).json({
@@ -90,7 +92,7 @@ export const getRecommendations = asyncHandler(async (req, res) => {
   }
 
   // Get AI recommendations
-  const recommendations = await getCarRecommendations(query, allCars);
+  const recommendations = await getCarRecommendations(query, allCars, persona);
 
   // Map recommendation names to actual car objects
   const recommendedCars = [];
@@ -115,8 +117,28 @@ export const getRecommendations = asyncHandler(async (req, res) => {
     data: {
       recommendations: recommendedCars.slice(0, 5),
       summary: recommendations.summary,
+      persona: recommendations.persona,
       query,
     },
+  });
+});
+
+export const getDnaMatchResult = asyncHandler(async (req, res) => {
+  const { answers = {}, persona = 'track_enthusiast' } = req.body;
+
+  const allCars = await Car.find().limit(50);
+  if (allCars.length === 0) {
+    return res.status(404).json({
+      success: false,
+      message: 'No cars available in database',
+    });
+  }
+
+  const result = await getDnaMatch(answers, allCars, persona);
+
+  res.status(200).json({
+    success: true,
+    data: result,
   });
 });
 
@@ -159,3 +181,32 @@ export const compareCars = asyncHandler(async (req, res) => {
     },
   });
 });
+
+export const getSemanticSearch = asyncHandler(async (req, res) => {
+  const { query, topK = 6 } = req.body;
+  if (!query || !query.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Query is required for vector search',
+    });
+  }
+
+  const allCars = await Car.find().limit(50);
+  const searchResult = searchByVector(query, allCars, Number(topK));
+
+  res.setHeader('X-Search-Latency', `${searchResult.latencyMs}ms`);
+  res.setHeader('X-Cache-Status', searchResult.fromCache ? 'HIT' : 'MISS');
+
+  res.status(200).json({
+    success: true,
+    data: searchResult,
+  });
+});
+
+export const getCacheMetrics = asyncHandler(async (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: queryCache.getMetrics(),
+  });
+});
+

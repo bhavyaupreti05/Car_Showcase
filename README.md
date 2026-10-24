@@ -1,10 +1,10 @@
-# 🚗 CarHub - AI-Powered Car Discovery Platform
+# 🚗 Car Showcase - AI-Powered Car Discovery Platform
 
 > A premium, production-ready MERN stack application featuring AI-powered car recommendations and intelligent comparison tools. Built for SDE internship applications.
 
 ## 🎯 Overview
 
-CarHub is a sophisticated car discovery platform that combines a modern tech stack with cutting-edge AI features. Users can:
+Car Showcase is a sophisticated car discovery platform that combines a modern tech stack with cutting-edge AI features. Users can:
 
 - **🔍 Browse & Filter**: Search through a curated collection of 16+ premium Indian cars
 - **🤖 AI Recommendations**: Get personalized car suggestions based on natural language queries

@@ -9,16 +9,25 @@ export const useCarStore = create((set, get) => ({
   error: null,
   selectedCars: [],
   compareOpen: false,
+  dragRaceOpen: false,
   budget: '',
   garage: [],
   recommendations: [],
+  recommendationSummary: '',
+  recommendationPersona: null,
   recommendationLoading: false,
+  selectedPersona: 'track_enthusiast',
+  dnaResult: null,
+  dnaLoading: false,
   comparisonData: null,
   comparisonLoading: false,
 
   // Actions
+  setSelectedPersona: (id) => set({ selectedPersona: id }),
   openCompareModal: () => set({ compareOpen: true }),
   closeCompareModal: () => set({ compareOpen: false }),
+  openDragRace: () => set({ dragRaceOpen: true }),
+  closeDragRace: () => set({ dragRaceOpen: false }),
   setBudget: (value) => set({ budget: value }),
   addToGarage: (car) =>
     set((state) =>
@@ -42,21 +51,40 @@ export const useCarStore = create((set, get) => ({
     }
   },
 
-  getRecommendations: async (query) => {
+  getRecommendations: async (query, persona) => {
     set({ recommendationLoading: true, error: null });
     try {
-      const response = await carAPI.getRecommendations(query);
+      const activePersona = persona || get().selectedPersona;
+      const response = await carAPI.getRecommendations(query, activePersona);
       set({
         recommendations: response.data.data.recommendations,
+        recommendationSummary: response.data.data.summary,
+        recommendationPersona: response.data.data.persona,
         recommendationLoading: false,
       });
-      toast.success('Recommendations found!');
+      toast.success('Recommendations generated!');
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       set({ error: message, recommendationLoading: false });
       toast.error(message);
     }
   },
+
+  fetchDnaMatch: async (answers, persona) => {
+    set({ dnaLoading: true, error: null });
+    try {
+      const activePersona = persona || get().selectedPersona;
+      const response = await carAPI.getDnaMatch(answers, activePersona);
+      set({ dnaResult: response.data.data, dnaLoading: false });
+      toast.success('Automotive DNA Match Found!');
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      set({ error: message, dnaLoading: false });
+      toast.error(message);
+    }
+  },
+
+  clearDnaResult: () => set({ dnaResult: null }),
 
   compareCars: async (car1Id, car2Id) => {
     set({ comparisonLoading: true, error: null });
@@ -71,6 +99,8 @@ export const useCarStore = create((set, get) => ({
     }
   },
 
+  clearSelectedCars: () => set({ selectedCars: [] }),
+
   toggleCarSelection: (carId) => {
     set((state) => {
       const isSelected = state.selectedCars.some((id) => id === carId);
@@ -82,11 +112,10 @@ export const useCarStore = create((set, get) => ({
 
       return {
         selectedCars: newSelection,
-        compareOpen: newSelection.length === 2,
       };
     });
   },
 
-  clearComparison: () => set({ comparisonData: null, compareOpen: false }),
+  clearComparison: () => set({ comparisonData: null, compareOpen: false, selectedCars: [] }),
   clearRecommendations: () => set({ recommendations: [] }),
 }));

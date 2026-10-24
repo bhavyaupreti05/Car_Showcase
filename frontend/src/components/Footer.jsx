@@ -10,7 +10,7 @@ export const Footer = () => {
           {/* Company Info */}
           <div>
             <h3 className="text-xl font-bold mb-4">
-              Car<span className="text-blue-500">Hub</span>
+              Car <span className="text-blue-500">Showcase</span>
             </h3>
             <p className="text-gray-400 mb-4">
               Your trusted platform for finding and comparing premium cars with AI-powered recommendations.
@@ -26,7 +26,7 @@ export const Footer = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                <span>contact@carhub.com</span>
+                <span>contact@carshowcase.com</span>
               </div>
             </div>
           </div>
@@ -83,7 +83,7 @@ export const Footer = () => {
         <div className="border-t border-gray-800 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm">
-              © 2024 CarHub. All rights reserved. Made for SDE internship aspirants.
+              © 2024 Car Showcase. All rights reserved. Made for SDE internship aspirants.
             </p>
             <div className="flex gap-6 text-sm text-gray-400">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
