@@ -106,7 +106,7 @@ export const getRecommendations = asyncHandler(async (req, res) => {
 
     if (car) {
       recommendedCars.push({
-        ...car.toObject(),
+        ...(typeof car.toObject === 'function' ? car.toObject() : car),
         aiReason: rec.reason,
       });
     }
@@ -175,8 +175,8 @@ export const compareCars = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: {
-      car1: car1.toObject(),
-      car2: car2.toObject(),
+      car1: typeof car1.toObject === 'function' ? car1.toObject() : car1,
+      car2: typeof car2.toObject === 'function' ? car2.toObject() : car2,
       comparison,
     },
   });
