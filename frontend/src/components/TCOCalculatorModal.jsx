@@ -23,6 +23,7 @@ export const TCOCalculatorModal = ({ car, onClose }) => {
   const isDiesel = car.fuelType?.toLowerCase() === 'diesel';
 
   const price = car.price || 1500000;
+  const isLuxury = price > 3000000;
   const mileage = Number(car.mileage) || (isEV ? 350 : 16);
 
   // User input states
@@ -53,7 +54,6 @@ export const TCOCalculatorModal = ({ car, onClose }) => {
     const fuelSavingsVsPetrol = Math.max(0, baselinePetrolCost - totalFuelCost);
 
     // 2. Depreciation Retention Rates by Brand Tier & Year
-    const isLuxury = price > 3000000;
     const retentionCurve = isLuxury
       ? [1.0, 0.78, 0.66, 0.55, 0.46, 0.38] // Luxury depreciates steeper
       : [1.0, 0.85, 0.76, 0.67, 0.58, 0.50]; // Mass market retains better
