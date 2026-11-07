@@ -420,6 +420,89 @@ In 2-3 engaging, charismatic sentences in your distinct persona voice, give your
   };
 };
 
+export const buildLocalComparison = (car1, car2) => {
+  const p1 = Number(car1.power) || 120;
+  const p2 = Number(car2.power) || 120;
+  const m1 = Number(car1.mileage) || 16;
+  const m2 = Number(car2.mileage) || 16;
+  const a1 = Number(car1.acceleration) || 9.5;
+  const a2 = Number(car2.acceleration) || 9.5;
+  const price1 = Number(car1.price) || 1500000;
+  const price2 = Number(car2.price) || 1500000;
+
+  const prosOfCar1 = [];
+  const consOfCar1 = [];
+  const prosOfCar2 = [];
+  const consOfCar2 = [];
+
+  if (p1 >= p2) {
+    prosOfCar1.push(`More commanding output at ${p1} PS vs ${p2} PS`);
+    consOfCar2.push(`Lower raw power output (${p2} PS)`);
+  } else {
+    prosOfCar2.push(`Superior power reserve at ${p2} PS vs ${p1} PS`);
+    consOfCar1.push(`Lower peak output (${p1} PS)`);
+  }
+
+  if (m1 >= m2) {
+    prosOfCar1.push(`Better certified efficiency (${m1} ${car1.mileageUnit || 'kmpl'})`);
+    consOfCar2.push(`Higher fuel consumption rate (${m2} ${car2.mileageUnit || 'kmpl'})`);
+  } else {
+    prosOfCar2.push(`Higher fuel savings (${m2} ${car2.mileageUnit || 'kmpl'})`);
+    consOfCar1.push(`Higher fuel consumption (${m1} ${car1.mileageUnit || 'kmpl'})`);
+  }
+
+  if (price1 <= price2) {
+    prosOfCar1.push(`More competitive price point at ₹${car1.priceDisplay || price1.toLocaleString()}`);
+    consOfCar2.push(`Higher initial acquisition outlay`);
+  } else {
+    prosOfCar2.push(`Better value proposition at ₹${car2.priceDisplay || price2.toLocaleString()}`);
+    consOfCar1.push(`Premium upfront pricing`);
+  }
+
+  if (car1.safetyRating && car1.safetyRating >= 4) {
+    prosOfCar1.push(`Proven ${car1.safetyRating}-Star crash test protection`);
+  }
+  if (car2.safetyRating && car2.safetyRating >= 4) {
+    prosOfCar2.push(`Reassuring ${car2.safetyRating}-Star occupant safety rating`);
+  }
+
+  if (prosOfCar1.length < 3) prosOfCar1.push(`Proven ${car1.brand} brand reliability & widespread network`);
+  if (prosOfCar2.length < 3) prosOfCar2.push(`Refined ${car2.brand} engineering and ergonomics`);
+  if (consOfCar1.length < 2) consOfCar1.push(`Waiting periods may vary across metropolitan dealers`);
+  if (consOfCar2.length < 2) consOfCar2.push(`Long-term ownership cost should be budgeted for`);
+
+  return {
+    performance: p1 > p2
+      ? `${car1.name} leads in dynamic punch with ${p1} PS vs ${p2} PS, delivering sharper response during overtakes.`
+      : `${car2.name} offers greater mechanical vitality with ${p2} PS compared to ${p1} PS in the ${car1.name}.`,
+    comfort: `Both the ${car1.name} and ${car2.name} feature well-damped suspension tailored for varied road surfaces, with ergonomically supported seating and modern infotainment.`,
+    mileage: m1 > m2
+      ? `${car1.name} delivers lower recurring fuel expenses at ${m1} ${car1.mileageUnit || 'kmpl'} versus ${m2} ${car2.mileageUnit || 'kmpl'}.`
+      : `${car2.name} is the thriftier choice, clocking ${m2} ${car2.mileageUnit || 'kmpl'} against ${m1} ${car1.mileageUnit || 'kmpl'}.`,
+    safety: `Equipped with multiple airbags, ABS with EBD, and electronic stability, both models offer solid structural safety and crash integrity.`,
+    maintenanceCost: price1 < price2
+      ? `${car1.name} enjoys an accessible spare parts catalog and widespread service reach, yielding lower scheduled maintenance.`
+      : `${car2.name} maintains a strong service reputation, ensuring predictable scheduled maintenance costs throughout ownership.`,
+    cityDriving: a1 <= a2 && m1 >= m2
+      ? `${car1.name} excels in congested city driving thanks to its nimble urban footprint and relaxed low-end response.`
+      : `${car2.name} is well-suited for urban stop-and-go conditions with light steering and composed suspension over broken pavement.`,
+    highwayDriving: p1 >= p2
+      ? `${car1.name} shines on expressways with calm high-speed manners and effortless passing composure.`
+      : `${car2.name} provides confident high-speed cruising with reassuring directional stability.`,
+    prosOfCar1,
+    consOfCar1,
+    prosOfCar2,
+    consOfCar2,
+    finalRecommendation: p1 > p2
+      ? `If driving engagement and power are your priorities, choose the ${car1.name}. If you lean towards balanced practicality, the ${car2.name} remains an outstanding contender.`
+      : `The ${car2.name} edges out as the more versatile all-rounder, while the ${car1.name} remains a compelling proposition for those seeking value.`,
+    bestFor: {
+      car1: `Drivers seeking ${p1 > p2 ? 'enthusiastic performance and highway power' : 'sensible everyday utility and balanced operating costs'}.`,
+      car2: `Buyers prioritizing ${p2 > p1 ? 'spirited throttle response and refined touring' : 'accessible ownership and reliable commuting'}.`
+    }
+  };
+};
+
 export const getCarComparison = async (car1, car2) => {
   if (!car1 || !car2) {
     throw new Error('Two cars are required for comparison');
@@ -438,7 +521,7 @@ Car 1: ${car1.name} (${car1.brand} ${car1.model})
 - Transmission: ${car1.transmission}
 - Mileage: ${car1.mileage} ${car1.mileageUnit}
 - Body Type: ${car1.bodyType}
-- Features: ${car1.features.join(', ')}
+- Features: ${Array.isArray(car1.features) ? car1.features.join(', ') : 'Standard equipment'}
 - Power: ${car1.power} PS, Torque: ${car1.torque} Nm
 - 0-100: ${car1.acceleration}s, Top Speed: ${car1.topSpeed} km/h
 
@@ -448,7 +531,7 @@ Car 2: ${car2.name} (${car2.brand} ${car2.model})
 - Transmission: ${car2.transmission}
 - Mileage: ${car2.mileage} ${car2.mileageUnit}
 - Body Type: ${car2.bodyType}
-- Features: ${car2.features.join(', ')}
+- Features: ${Array.isArray(car2.features) ? car2.features.join(', ') : 'Standard equipment'}
 - Power: ${car2.power} PS, Torque: ${car2.torque} Nm
 - 0-100: ${car2.acceleration}s, Top Speed: ${car2.topSpeed} km/h
 
