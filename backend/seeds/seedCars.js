@@ -1,12 +1,17 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Car from '../models/Car.js';
-import { connectDB } from '../config/database.js';
+import { connectDB, isConnectedToDB } from '../config/database.js';
 import dummyCars from './dummyCars.js';
 
 dotenv.config();
 
 await connectDB();
+
+if (!isConnectedToDB) {
+  console.error('❌ Could not connect to MongoDB. Please verify your connection string and network access.');
+  process.exit(1);
+}
 
 const cars = dummyCars;
 
